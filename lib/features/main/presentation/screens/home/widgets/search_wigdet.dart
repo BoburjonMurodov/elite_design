@@ -2,10 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SearchWidget extends StatefulWidget {
-  SearchWidget({super.key, required this.controller, required this.title});
+  SearchWidget({super.key, required this.controller, required this.title, required this.onValueChange});
 
   TextEditingController controller;
   String title;
+  final Function(String) onValueChange;
 
   @override
   State<SearchWidget> createState() => _SearchWidgetState();
@@ -21,6 +22,9 @@ class _SearchWidgetState extends State<SearchWidget> {
         child: TextField(
           controller: widget.controller,
           autocorrect: false,
+          onChanged: (value) {
+            widget.onValueChange(value);
+          },
           decoration: InputDecoration(
               fillColor: Colors.white,
               contentPadding: EdgeInsets.only(left: 12),
@@ -33,7 +37,9 @@ class _SearchWidgetState extends State<SearchWidget> {
               hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
               prefixIcon: Icon(Icons.search),
               suffixIcon: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    widget.controller.clear();
+                  },
                   icon: Icon(
                     Icons.clear,
                   ))),

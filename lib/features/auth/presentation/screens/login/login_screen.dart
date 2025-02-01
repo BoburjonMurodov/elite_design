@@ -1,9 +1,10 @@
 import 'dart:developer';
 
-import 'package:elite_design/config/routes/route_manager.dart';
-import 'package:elite_design/features/main/presentation/bloc/login/login_screen_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../../core/routes/route_manager.dart';
+import '../../bloc/login/login_screen_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -37,9 +38,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   return Dialog(
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
-                      child: Row(
+                      child: Wrap(
                         children: [
-                          Icon(Icons.error),
+                          Icon(Icons.error,
+                            color: Colors.red,
+                          ),
                           SizedBox(width: 16),
                           Text(state.error)
                         ],
@@ -65,14 +68,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color(0xff1a1a16),
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(50),
+                          bottomRight: Radius.circular(50)),
                     ),
                     child: Center(
                       child: SizedBox(
                           width: 180,
                           height: 180,
                           child:
-                          Image.asset("assets/images/splash_image.webp")),
+                              Image.asset("assets/images/splash_image.webp")),
                     ),
                   ),
                 ),
@@ -155,15 +160,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Center(
                                     child: state.status == Status.LOADING
                                         ? CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
+                                            color: Colors.white,
+                                          )
                                         : Text(
-                                      "Kirish",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w500),
-                                    ))),
+                                            "Kirish",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w500),
+                                          ))),
                           )
                         ],
                       ),

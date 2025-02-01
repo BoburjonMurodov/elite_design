@@ -1,4 +1,9 @@
-import 'package:bloc/bloc.dart';
+import 'dart:developer';
+
+import 'package:elite_design/features/auth/data/model/sign_in_request.dart';
+import 'package:elite_design/features/auth/domain/repository/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../data/repository_impl/auth_repository_impl.dart';
 
 part 'login_screen_event.dart';
 part 'login_screen_state.dart';
@@ -8,6 +13,7 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
       : super(
             LoginScreenState("", showPassword: false, status: Status.INITIAL)) {
     on<LoginScreenEvent>((event, emit) {});
+    AuthRepository authRepository = AuthRepositoryImpl();
 
     on<OnClickLoginButton>((event, emit) async {
       if (event.login.isEmpty || event.password.isEmpty) {
@@ -16,16 +22,19 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
               error: "Kerakli maydonlar to'ldirilishi kerak",
               status: Status.ERROR),
         );
-      } else if (event.login == "admin" && event.password == "admin") {
-        emit(state.copyWith(error: "", status: Status.LOADING));
-        await Future.delayed(Duration(seconds: 1), () {
-          emit(
-            state.copyWith(error: "", status: Status.SUCCESS),
-          );
+        return;
+      }
+
+      emit(state.copyWith(status: Status.LOADING));
+      final result = await authRepository
+          .signIn(SignInRequest(login: event.login, password: event.password));
+
+      if (result.isFailure) {
+        emit(state.copyWith(error: result.failureValue.toString().replaceAll("Exception: ", ""), status: Status.ERROR));
+      } else if (result.isSuccess) {
+        result.onSuccess((user) {
+          emit(state.copyWith(status: Status.SUCCESS));
         });
-      } else {
-        emit(state.copyWith(
-            error: "Login yoki parol noto'g'ri", status: Status.ERROR));
       }
     });
 

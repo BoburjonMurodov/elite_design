@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:elite_design/config/routes/route_manager.dart';
 import 'package:elite_design/features/main/presentation/screens/cart/cart_screen.dart';
 import 'package:elite_design/features/main/presentation/screens/home/home_screen.dart';
 import 'package:elite_design/features/main/presentation/screens/saved/saved_screen.dart';
@@ -9,6 +8,9 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/zondicons.dart';
+
+import '../../../../../core/local_storage/hive_helper.dart';
+import '../../../../../core/routes/route_manager.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -26,12 +28,6 @@ class Tabs {
   Tabs(this.icon, this.title, this.color, this.gradient);
 }
 
-getGradient(Color color) {
-  return LinearGradient(
-      colors: [color.withOpacity(0.5), color.withOpacity(0.1)],
-      stops: [0.0, 0.7]);
-}
-
 class _MainScreenState extends State<MainScreen> {
   int _currentTab = 0;
   final AdvancedDrawerController? _advancedDrawerController =
@@ -40,18 +36,17 @@ class _MainScreenState extends State<MainScreen> {
   var saved = SavedScreen();
   var cart = CartScreen();
 
-
   @override
   Widget build(BuildContext context) {
     var list = [
-    GButton(icon: Icons.home, text: "Asosiy"),
-     GButton(icon: Icons.favorite, text: "Saqlanganlar"),
-     GButton(icon: Icons.shopping_cart, text: "Savat"),
+      GButton(icon: Icons.home, text: "Asosiy"),
+      GButton(icon: Icons.favorite, text: "Saqlanganlar"),
+      GButton(icon: Icons.shopping_cart, text: "Savat"),
     ];
 
     var navigationBarHeight = MediaQuery.of(context).padding.bottom;
 
-    if(!Platform.isIOS){
+    if (!Platform.isIOS) {
       navigationBarHeight += 12;
     }
 
@@ -79,6 +74,9 @@ class _MainScreenState extends State<MainScreen> {
               ListTile(
                 leading: Icon(Icons.people, color: Colors.white),
                 title: Text("Mijozlar", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pushNamed(context, RouteManager.consumerScreen);
+                },
               ),
               ListTile(
                 leading: Icon(Icons.shopping_basket, color: Colors.white),
@@ -94,6 +92,11 @@ class _MainScreenState extends State<MainScreen> {
                 leading: Icon(Icons.exit_to_app, color: Colors.white),
                 title: Text("Tizimdan chiqish",
                     style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  await HiveHelper().signOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, RouteManager.loginScreen, (route) => false);
+                },
               ),
               Spacer(),
               Text(
@@ -145,27 +148,27 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.pushNamed(context, RouteManager.barCodeScreen);
                 },
                 color: Colors.white,
-                icon: Icon(Icons.qr_code_scanner)
-            ),
+                icon: Icon(Icons.qr_code_scanner)),
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, RouteManager.productScreen,
+                      arguments: {
+                        'title': 'Barcha tovarlar',
+                        'id': null,
+                      });
+                },
                 color: Colors.white,
-                icon: Icon(Icons.search)
-            ),
+                icon: Icon(Icons.search)),
           ],
         ),
         bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-            boxShadow: [
-              BoxShadow(
+          decoration: BoxDecoration(color: Colors.white, boxShadow: [
+            BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 10,
                 blurRadius: 7,
-                offset: Offset(0, 3)
-              )
-            ]
-          ),
+                offset: Offset(0, 3))
+          ]),
           padding: EdgeInsets.only(
               bottom: navigationBarHeight, right: 12, left: 12, top: 12),
           child: GNav(

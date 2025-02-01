@@ -1,8 +1,21 @@
-import 'package:elite_design/config/routes/route_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'core/local_storage/hive_helper.dart';
+import 'core/routes/route_manager.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+
+  Hive.init(appDocumentDir.path);
+  Hive.initFlutter();
+
+  await HiveHelper.init();
+
+  runApp(MultiBlocProvider(providers: [], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +30,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: SplashScreen(),
       initialRoute: RouteManager.splashScreen,
       onGenerateRoute: (settings) => RouteManager.generateRoutes(settings),
     );
