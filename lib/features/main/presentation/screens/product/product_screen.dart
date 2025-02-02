@@ -1,3 +1,4 @@
+import 'package:elite_design/features/main/presentation/bloc/main/main_screen_bloc.dart';
 import 'package:elite_design/features/main/presentation/bloc/product/product_screen_bloc.dart';
 import 'package:elite_design/features/main/presentation/screens/home/widgets/search_wigdet.dart';
 import 'package:elite_design/features/main/presentation/screens/saved/widgets/product_item.dart';
@@ -61,13 +62,21 @@ class ProductScreen extends StatelessWidget {
                       },
                       color: Colors.white,
                       icon: Icon(Icons.qr_code_scanner)),
-                  IconButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, RouteManager.productScreen,
-                            arguments: "Barcha tovarlar");
-                      },
-                      color: Colors.white,
-                      icon: Icon(Icons.search)),
+                  BlocBuilder<MainScreenBloc, MainScreenState>(
+                    builder: (context, state) {
+                      return IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context.read<MainScreenBloc>().add(OnChangeTab(2));
+                        },
+                        color: Colors.white,
+                        icon: Badge(
+                          child: Icon(Icons.shopping_cart),
+                          label: Text('${state.cartItems.length}'),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
               body: Column(
@@ -80,6 +89,11 @@ class ProductScreen extends StatelessWidget {
                           .read<ProductScreenBloc>()
                           .add(ProductScreenFilterEvent(query: value));
                     },
+                    onClear: () {
+                      context
+                          .read<ProductScreenBloc>()
+                          .add(ProductScreenFilterEvent(query: ''));
+                    }
                   ),
                   if (state.products.isEmpty)
                     Expanded(
@@ -100,11 +114,17 @@ class ProductScreen extends StatelessWidget {
                         itemCount: state.products.length,
                         itemBuilder: (context, index) {
                           return ProductItemWidget(
-                              item: state.products[index],
-                            onClick: (id){
-                                context.read<ProductScreenBloc>().add(OnClickFavouriteEvent(id: id, currentIndex: index));
+                            item: state.products[index],
+                            onClick: (id) {
+                              context.read<ProductScreenBloc>().add(
+                                  OnClickFavouriteEvent(
+                                      id: id, currentIndex: index));
                             },
-                            bloc: 'product',
+                            onUpdate: () {
+                              context.read<ProductScreenBloc>().add(
+                                  ProductScreenInitialEvent(
+                                      category: categoryId));
+                            },
                           );
                         },
                         separatorBuilder: (BuildContext context, int index) {

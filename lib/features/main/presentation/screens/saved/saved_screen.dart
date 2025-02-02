@@ -3,6 +3,7 @@ import 'package:elite_design/features/main/presentation/screens/saved/widgets/pr
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/main/main_screen_bloc.dart';
 import '../../bloc/saved/saved_screen_bloc.dart';
 
 class SavedScreen extends StatelessWidget {
@@ -29,9 +30,12 @@ class SavedScreen extends StatelessWidget {
                         return ProductItemWidget(
                           item: state.products[index],
                           onClick: (id) {
+                            context.read<MainScreenBloc>().add(GetFavouriteItems());
                             context.read<SavedScreenBloc>().add(OnClickDislike(id: id, currentIndex: index));
                           },
-                          bloc: 'saved'
+                          onUpdate: () {
+                            context.read<SavedScreenBloc>().add(SavedScreenInitial());
+                          },
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) {

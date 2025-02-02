@@ -1,8 +1,15 @@
+import 'package:elite_design/features/main/domain/repository/product_repository.dart';
+import 'package:elite_design/features/main/presentation/bloc/main/main_screen_bloc.dart';
+import 'package:elite_design/features/main/presentation/screens/bottomsheet/app_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+
+import '../../../data/repository_impl/product_repository_impl.dart';
 
 class BarCodeScreen extends StatefulWidget {
   BarCodeScreen({super.key});
+  ProductRepository repository = ProductRepositoryImpl();
 
   TextEditingController controller = TextEditingController();
 
@@ -11,6 +18,7 @@ class BarCodeScreen extends StatefulWidget {
 }
 
 class _BarCodeScreenState extends State<BarCodeScreen> {
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size.width;
@@ -71,7 +79,9 @@ class _BarCodeScreenState extends State<BarCodeScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                       suffixIcon: IconButton(
-                          onPressed: () {}, icon: Icon(Icons.done_all))),
+                          onPressed: () async {
+                            _openScanner(widget.controller.text);
+                          }, icon: Icon(Icons.done_all))),
                 )),
             SizedBox(height: 48),
             SizedBox(
@@ -79,7 +89,6 @@ class _BarCodeScreenState extends State<BarCodeScreen> {
                 height: 150,
                 child: Image.asset('assets/images/splash_image.webp')),
             SizedBox(height: 24),
-
             InkWell(
               onTap: () async {
                 String? res = await SimpleBarcodeScanner.scanBarcode(
@@ -91,10 +100,12 @@ class _BarCodeScreenState extends State<BarCodeScreen> {
                     backButtonIcon: Icon(Icons.arrow_back_ios),
                   ),
                   isShowFlashIcon: true,
-                  delayMillis: 2000,
+                  delayMillis: 100,
                   cameraFace: CameraFace.back,
                 );
                 widget.controller.text = res ?? "-1";
+
+                _openScanner(res);
               },
               child: Container(
                 width: size,
@@ -119,4 +130,18 @@ class _BarCodeScreenState extends State<BarCodeScreen> {
       ),
     );
   }
+
+  void _openScanner(String? res) async {
+    final result = await widget.repository.getProductByBarCode(res ?? "-1");
+
+    if (result == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Bunday mahsulot topilmadi")));
+    } else {
+      showAppBottomSheet(context: context, item: result, onUpdate: (){
+        // context.read<MainScreenBloc>().add(GetCartItems());
+      });
+    }
+  }
+
 }

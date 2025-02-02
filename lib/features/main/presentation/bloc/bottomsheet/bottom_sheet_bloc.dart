@@ -53,12 +53,14 @@ class BottomSheetBloc extends Bloc<BottomSheetEvent, BottomSheetState> {
     });
 
     on<OnChangePayment>((event, emit) {
-      emit(state.copyWith(payment: event.payment, price: calculatePrice()));
+      final updatedState = state.copyWith(payment: event.payment);
+      emit(updatedState);
+      final newPrice = calculatePrice();
+      emit(updatedState.copyWith(price: newPrice));
     });
 
     on<OnClickAddToCart>((event, emit) async {
       final count = int.tryParse(state.count) ?? 0;
-      log('count - $count');
       if (count > 0 && count <= item.ostatka) {
         await _repository.addProductToCart(item.tovarId, count, state.payment.name);
         emit(state.copyWith(status: Status.SUCCESS));
@@ -70,8 +72,6 @@ class BottomSheetBloc extends Bloc<BottomSheetEvent, BottomSheetState> {
   }
 
   String calculatePrice() {
-    log('before parsing ${state.count}');
-
     if (state.count.isEmpty) {
       return '0';
     }
@@ -79,18 +79,14 @@ class BottomSheetBloc extends Bloc<BottomSheetEvent, BottomSheetState> {
     int? quantity = int.tryParse(state.count);
 
     if (quantity == null) {
-      log('Invalid input for count. Setting price to 0');
       return '0';
     }
-
-    log('count - $quantity');
+    log('payment method - ${state.payment}');
     if (state.payment == Payment.RETAIL) {
       final price = (item.sena * quantity).toString();
-      log('price - $price');
       return price;
     } else {
       final price = (item.optomNarx * quantity).toString();
-      log('price - $price');
       return price;
     }
   }

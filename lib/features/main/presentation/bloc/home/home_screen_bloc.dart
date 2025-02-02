@@ -27,8 +27,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
 
       if (result.isSuccess) {
         list = result.successValue!;
-        emit(state.copyWith(
-            categories: result.successValue, status: HomeScreenStatus.SUCCESS));
+        emit(state.copyWith(categories: result.successValue, status: HomeScreenStatus.SUCCESS));
       } else {
         emit(state.copyWith(status: HomeScreenStatus.ERROR));
       }
@@ -43,7 +42,6 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
             status: HomeScreenStatus.ERROR));
       }
       emit(state.copyWith(status: HomeScreenStatus.INITIAL));
-
     });
 
     on<FilterCategories>((event, emit) async {

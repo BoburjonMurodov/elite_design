@@ -1,21 +1,22 @@
 import 'package:elite_design/core/routes/route_manager.dart';
+import 'package:elite_design/core/utils/extension.dart';
 import 'package:elite_design/features/main/presentation/screens/bottomsheet/app_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../data/model/data/product_data/product_data.dart';
 
 class ProductItemWidget extends StatelessWidget {
-  ProductItemWidget({super.key, required this.item, this.onClick, required this.bloc});
+  ProductItemWidget({super.key, required this.item, this.onClick, required this.onUpdate});
 
   ProductData item;
   Function(String)? onClick;
-  String bloc;
+  Function() onUpdate;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-
+        showAppBottomSheet(context: context, item: item, onUpdate: onUpdate);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -85,7 +86,7 @@ class ProductItemWidget extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        item.sena.toString(),
+                        item.sena.toString().formatMoney(),
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

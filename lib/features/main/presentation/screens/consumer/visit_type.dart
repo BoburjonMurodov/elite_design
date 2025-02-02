@@ -1,0 +1,3 @@
+enum VisitType{
+  REGULAR, ORDER
+}

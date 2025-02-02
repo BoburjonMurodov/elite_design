@@ -1,12 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SearchWidget extends StatefulWidget {
-  SearchWidget({super.key, required this.controller, required this.title, required this.onValueChange});
+  SearchWidget(
+      {super.key,
+      required this.controller,
+      required this.title,
+      required this.onValueChange,
+      required this.onClear});
 
   TextEditingController controller;
   String title;
   final Function(String) onValueChange;
+  Function() onClear;
 
   @override
   State<SearchWidget> createState() => _SearchWidgetState();
@@ -38,6 +43,7 @@ class _SearchWidgetState extends State<SearchWidget> {
               prefixIcon: Icon(Icons.search),
               suffixIcon: IconButton(
                   onPressed: () {
+                    widget.onClear();
                     widget.controller.clear();
                   },
                   icon: Icon(

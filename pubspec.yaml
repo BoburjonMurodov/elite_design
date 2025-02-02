@@ -48,8 +48,8 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.1.5
   json_annotation: ^4.9.0
-  fluttertoast: ^8.2.10
   sqflite: ^2.4.1
+  fluttertoast: ^8.2.10
 
 dev_dependencies:
   flutter_test:

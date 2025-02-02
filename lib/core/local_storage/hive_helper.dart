@@ -1,9 +1,7 @@
-import 'dart:developer';
+import 'dart:core';
 
 import 'package:elite_design/features/auth/data/model/sign_in_response.dart';
 import 'package:hive/hive.dart';
-
-import '../../features/main/data/model/response/product/product_list_response.dart';
 
 class HiveHelper {
   static late Box<String> _loginBox;
@@ -44,4 +42,13 @@ class HiveHelper {
     return _loginBox.get('login', defaultValue: null);
   }
 
+  Future<void> setVazvrat(bool value) async {
+    final box = await Hive.openBox<bool>('vazvrat');
+    await box.put('vazvrat', value);
+  }
+
+  Future<bool> getVazvrat() async {
+    final box = await Hive.openBox<bool>('vazvrat');
+    return box.get('vazvrat', defaultValue: false) ?? false;
+  }
 }

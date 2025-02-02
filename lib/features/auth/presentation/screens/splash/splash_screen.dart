@@ -1,8 +1,10 @@
 import 'package:elite_design/features/auth/presentation/bloc/splash/splash_screen_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../../core/routes/route_manager.dart';
+import '../../../../main/presentation/bloc/main/main_screen_bloc.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -49,6 +51,9 @@ class _SplashScreenState extends State<SplashScreen>
         listener: (context, state) {
           if (state.state == SplashScreenStatus.HOME) {
             Navigator.pushReplacementNamed(context, RouteManager.mainScreen);
+            context.read<MainScreenBloc>().add(UpdateProductsAndCategories());
+            Fluttertoast.showToast(msg: "Ma'lumotlar yuklanmoqda,\nbiroz kuting...",
+            );
           }
 
           if (state.state == SplashScreenStatus.LOGIN) {

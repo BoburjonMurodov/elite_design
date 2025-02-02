@@ -64,12 +64,21 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> previousProducts = await db.query(
       'products',
-      columns: ['tovarId', 'isFavourite', 'count', 'payment'], // Include payment column
+      columns: [
+        'tovarId',
+        'isFavourite',
+        'count',
+        'payment'
+      ], // Include payment column
     );
 
     final Map<String, Map<String, dynamic>> oldProductMap = {
       for (var p in previousProducts)
-        p['tovarId']: {'isFavourite': p['isFavourite'], 'count': p['count'], 'payment': p['payment']}
+        p['tovarId']: {
+          'isFavourite': p['isFavourite'],
+          'count': p['count'],
+          'payment': p['payment']
+        }
     };
 
     await db.delete('products');
@@ -79,7 +88,8 @@ class DatabaseHelper {
       final isFavourite = oldProductMap[item.tovarId]?['isFavourite'] ?? 0;
       final count = oldProductMap[item.tovarId]?['count'] ?? 0;
       final payment = oldProductMap[item.tovarId]?['payment'] ?? '';
-      final product = ProductData.fromProductItem(item, isFavourite == 1, count, payment: payment);
+      final product = ProductData.fromProductItem(item, isFavourite == 1, count,
+          payment: payment);
       batch.insert('products', product.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
@@ -87,7 +97,6 @@ class DatabaseHelper {
 
     log('products saved in ${DateTime.now().millisecondsSinceEpoch - time} ms');
   }
-
 
   Future<List<ProductData>> getProductsByCategory(String id) async {
     final db = await database;
@@ -163,16 +172,16 @@ class DatabaseHelper {
       'products',
       where: 'count > 0',
     );
+
     return maps.map((map) => ProductData.fromMap(map)).toList();
   }
 
-  Future<void> updateProductCount(String id, int newCount, String payment) async {
+  Future<void> updateProductCount(
+      String id, int newCount, String payment) async {
     final db = await database;
     await db.update(
       'products',
-      {'count': newCount,
-        'payment' : payment
-      },
+      {'count': newCount, 'payment': payment},
       where: 'tovarId = ?',
       whereArgs: [id],
     );
@@ -180,5 +189,31 @@ class DatabaseHelper {
 
   Future<void> deleteFromCart(String id) async {
     await updateProductCount(id, 0, '');
+  }
+
+  Future<ProductData?> getProductByBarCode(String barcode) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'products',
+      where: 'barcode = ?',
+      whereArgs: [barcode],
+    );
+
+    final products = maps.map((map) => ProductData.fromMap(map)).toList();
+
+    if (products.isNotEmpty) {
+      return products.first;
+    }
+
+    return null;
+  }
+
+  Future<void> clearCart() async {
+    final db = await database;
+    await db.update(
+      'products',
+      {'count': 0, 'payment': ''},
+      where: 'count > 0',
+    );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:elite_design/features/main/presentation/bloc/main/main_screen_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -9,13 +10,13 @@ import 'core/routes/route_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final appDocumentDir = await getApplicationDocumentsDirectory();
-
   Hive.init(appDocumentDir.path);
-  Hive.initFlutter();
 
   await HiveHelper.init();
 
-  runApp(MultiBlocProvider(providers: [], child: const MyApp()));
+  runApp(MultiBlocProvider(providers: [
+    BlocProvider(create: (context) => MainScreenBloc()..add(MainScreenBlocInitial())),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
