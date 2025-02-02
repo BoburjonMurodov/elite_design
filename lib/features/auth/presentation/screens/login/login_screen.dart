@@ -54,12 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
             });
           }
           if (state.status == Status.SUCCESS) {
-            Navigator.pushNamed(context, RouteManager.mainScreen);
+            Navigator.pushReplacementNamed(context, RouteManager.splashScreen);
           }
         },
         builder: (context, state) {
           log(state.showPassword.toString());
           return Scaffold(
+            resizeToAvoidBottomInset: true,
             backgroundColor: Color(0xFFf5f6fa),
             body: Column(
               children: [

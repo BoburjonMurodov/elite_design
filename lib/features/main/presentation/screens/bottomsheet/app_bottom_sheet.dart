@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:elite_design/core/utils/extension.dart';
 import 'package:elite_design/features/main/presentation/screens/consumer/consumer_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/model/data/product_data/product_data.dart';
@@ -82,6 +83,8 @@ void showAppBottomSheet({
                             child: TextField(
                               controller: controller,
                               textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                               onChanged: (value) {
                                 context.read<BottomSheetBloc>().add(OnEnterValue(value: value));
                               },
