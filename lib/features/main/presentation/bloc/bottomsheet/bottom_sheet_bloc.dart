@@ -65,8 +65,8 @@ class BottomSheetBloc extends Bloc<BottomSheetEvent, BottomSheetState> {
         await _repository.addProductToCart(item.tovarId, count, state.payment.name);
         emit(state.copyWith(status: Status.SUCCESS));
       }else{
-        log('notogri qiymat kiritildi');
         emit(state.copyWith(status: Status.ERROR));
+        emit(state.copyWith(status: Status.INITIAL));
       }
     });
   }
